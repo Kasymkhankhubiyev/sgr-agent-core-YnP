@@ -129,6 +129,7 @@ async def create_chat_completion(request: ChatCompletionRequest):
         )
 
     try:
+        
         task = extract_user_content_from_messages(request.messages)
 
         try:

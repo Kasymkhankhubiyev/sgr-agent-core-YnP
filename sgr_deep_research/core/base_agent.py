@@ -49,7 +49,10 @@ class BaseAgent:
         self.max_iterations = max_iterations
         self.max_clarifications = max_clarifications
 
-        client_kwargs = {"base_url": config.openai.base_url, "api_key": config.openai.api_key}
+        client_kwargs = {"api_key": config.openai.api_key}
+        base_url = config.openai.base_url.strip()
+        if base_url:
+            client_kwargs["base_url"] = base_url
         if config.openai.proxy.strip():
             client_kwargs["http_client"] = httpx.AsyncClient(proxy=config.openai.proxy)
 
@@ -137,8 +140,14 @@ class BaseAgent:
         raise NotImplementedError("_prepare_tools must be implemented by subclass")
 
     async def _reasoning_phase(self) -> ReasoningTool:
-        """Call LLM to decide next action based on current context."""
-        raise NotImplementedError("_reasoning_phase must be implemented by subclass")
+        # """Call LLM to decide next action based on current context."""
+        # raise NotImplementedError("_reasoning_phase must be implemented by subclass")
+        res = await self.openai_client.chat.completions.create(
+        model="sgr_agent",
+        messages=[{"role": "user", "content": "Research AI market trends"}],
+        stream=True,
+        temperature=0,
+    )
 
     async def _select_action_phase(self, reasoning: ReasoningTool) -> BaseTool:
         """Select most suitable tool for the action decided in reasoning phase.
