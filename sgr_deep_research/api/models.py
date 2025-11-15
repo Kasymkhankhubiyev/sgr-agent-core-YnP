@@ -38,7 +38,9 @@ AGENT_MODEL_MAPPING = {
 class ChatMessage(BaseModel):
     """Chat message."""
 
-    role: Literal["system", "user", "assistant", "tool"] = Field(default="user", description="Sender role")
+    role: Literal["system", "user", "assistant", "tool"] = Field(
+        default="user", description="Sender role"
+    )
     content: str = Field(description="Message content")
 
 
@@ -88,7 +90,9 @@ class AgentStateResponse(BaseModel):
     searches_used: int = Field(description="Number of searches performed")
     clarifications_used: int = Field(description="Number of clarifications requested")
     sources_count: int = Field(description="Number of sources found")
-    current_step_reasoning: Dict[str, Any] | None = Field(default=None, description="Current agent step")
+    current_step_reasoning: Dict[str, Any] | None = Field(
+        default=None, description="Current agent step"
+    )
     execution_result: str | None = Field(default=None, description="Execution result")
 
 
@@ -107,4 +111,6 @@ class AgentListResponse(BaseModel):
 class ClarificationRequest(BaseModel):
     """Simple request for providing clarifications to an agent."""
 
-    clarifications: str = Field(description="Clarification text to provide to the agent")
+    clarifications: str = Field(
+        description="Clarification text to provide to the agent"
+    )

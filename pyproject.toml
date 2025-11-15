@@ -96,5 +96,9 @@ version = {attr = "sgr_deep_research.__version__"}
 [tool.setuptools.package-data]
 "sgr_deep_research" = ["**/*.yaml", "**/*.yml", "**/*.json", "**/*.txt"]
 
+[dependency-groups]
+dev = [
+    "black>=25.11.0",
+]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

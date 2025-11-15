@@ -49,8 +49,6 @@ class WebSearchTool(BaseTool):
     max_results: int = Field(
         default_factory=lambda: min(config.search.max_results, 10),
         description="Maximum results",
-        ge=1,
-        le=10,
     )
 
     def __init__(self, **data):
@@ -68,7 +66,9 @@ class WebSearchTool(BaseTool):
             include_raw_content=False,
         )
 
-        sources = TavilySearchService.rearrange_sources(sources, starting_number=len(context.sources) + 1)
+        sources = TavilySearchService.rearrange_sources(
+            sources, starting_number=len(context.sources) + 1
+        )
 
         for source in sources:
             context.sources[source.url] = source
@@ -85,7 +85,11 @@ class WebSearchTool(BaseTool):
         formatted_result += "Search Results (titles, links, short snippets):\n\n"
 
         for source in sources:
-            snippet = source.snippet[:100] + "..." if len(source.snippet) > 100 else source.snippet
+            snippet = (
+                source.snippet[:100] + "..."
+                if len(source.snippet) > 100
+                else source.snippet
+            )
             formatted_result += f"{str(source)}\n{snippet}\n\n"
 
         context.searches_used += 1

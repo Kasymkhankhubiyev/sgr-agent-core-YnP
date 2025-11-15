@@ -24,12 +24,18 @@ class FinalAnswerTool(BaseTool):
     Usage: Call after you complete research task
     """
 
-    reasoning: str = Field(description="Why task is now complete and how answer was verified")
-    completed_steps: list[str] = Field(
-        description="Summary of completed steps including verification", min_length=1, max_length=5
+    reasoning: str = Field(
+        description="Why task is now complete and how answer was verified"
     )
-    answer: str = Field(description="Comprehensive final answer with EXACT factual details (dates, numbers, names)")
-    status: Literal[AgentStatesEnum.COMPLETED, AgentStatesEnum.FAILED] = Field(description="Task completion status")
+    completed_steps: list[str] = Field(
+        description="Summary of completed steps including verification",
+    )
+    answer: str = Field(
+        description="Comprehensive final answer with EXACT factual details (dates, numbers, names)"
+    )
+    status: Literal[AgentStatesEnum.COMPLETED, AgentStatesEnum.FAILED] = Field(
+        description="Task completion status"
+    )
 
     async def __call__(self, context: ResearchContext) -> str:
         context.state = self.status

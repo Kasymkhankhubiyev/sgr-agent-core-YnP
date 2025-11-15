@@ -15,30 +15,21 @@ class ReasoningTool(BaseTool):
 
     # Reasoning chain - step-by-step thinking process (helps stabilize model)
     reasoning_steps: list[str] = Field(
-        description="Step-by-step reasoning (brief, 1 sentence each)",
-        min_length=2,
-        max_length=3,
+        description="Step-by-step reasoning (brief, 1 sentence each)"
     )
 
     # Reasoning and state assessment
     current_situation: str = Field(
-        description="Current research situation (2-3 sentences MAX)",
-        max_length=300,
+        description="Current research situation (2-3 sentences MAX)"
     )
-    plan_status: str = Field(
-        description="Status of current plan (1 sentence)",
-        max_length=150,
-    )
+    plan_status: str = Field(description="Status of current plan (1 sentence)")
     enough_data: bool = Field(
-        default=False,
-        description="Sufficient data collected for comprehensive report?",
+        default=False, description="Sufficient data collected for comprehensive report?"
     )
 
     # Next step planning
     remaining_steps: list[str] = Field(
-        description="1-3 remaining steps (brief, action-oriented)",
-        min_length=1,
-        max_length=3,
+        description="1-3 remaining steps (brief, action-oriented)"
     )
     task_completed: bool = Field(description="Is the research task finished?")
 

@@ -34,7 +34,9 @@ class ExtractPageContentTool(BaseTool):
     """
 
     reasoning: str = Field(description="Why extract these specific pages")
-    urls: list[str] = Field(description="List of URLs to extract full content from", min_length=1, max_length=5)
+    urls: list[str] = Field(
+        description="List of URLs to extract full content from",
+    )
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -66,7 +68,9 @@ class ExtractPageContentTool(BaseTool):
             if url in context.sources:
                 source = context.sources[url]
                 if source.full_content:
-                    content_preview = source.full_content[: config.scraping.content_limit]
+                    content_preview = source.full_content[
+                        : config.scraping.content_limit
+                    ]
                     formatted_result += (
                         f"{str(source)}\n\n**Full Content:**\n"
                         f"{content_preview}\n\n"
@@ -74,7 +78,9 @@ class ExtractPageContentTool(BaseTool):
                         "---\n\n"
                     )
                 else:
-                    formatted_result += f"{str(source)}\n*Failed to extract content*\n\n"
+                    formatted_result += (
+                        f"{str(source)}\n*Failed to extract content*\n\n"
+                    )
 
         logger.debug(formatted_result[:500])
         return formatted_result

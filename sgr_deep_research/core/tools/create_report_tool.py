@@ -38,14 +38,18 @@ class CreateReportTool(BaseTool):
         "MANDATORY: Include inline citations [1], [2], [3] after EVERY factual claim. "
         "Example: 'The system uses Vue.js [1] and Python [2].' NOT: 'The system uses Vue.js and Python.'"
     )
-    confidence: Literal["high", "medium", "low"] = Field(description="Confidence in findings")
+    confidence: Literal["high", "medium", "low"] = Field(
+        description="Confidence in findings"
+    )
 
     async def __call__(self, context: ResearchContext) -> str:
         # Save report
         reports_dir = config.execution.reports_dir
         os.makedirs(reports_dir, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        safe_title = "".join(c for c in self.title if c.isalnum() or c in (" ", "-", "_"))[:50]
+        safe_title = "".join(
+            c for c in self.title if c.isalnum() or c in (" ", "-", "_")
+        )[:50]
         filename = f"{timestamp}_{safe_title}.md"
         filepath = os.path.join(reports_dir, filename)
 
@@ -58,7 +62,9 @@ class CreateReportTool(BaseTool):
         if context.sources:
             full_content += "---\n\n"
             full_content += "## Источники / Sources\n\n"
-            full_content += "\n".join([str(source) for source in context.sources.values()])
+            full_content += "\n".join(
+                [str(source) for source in context.sources.values()]
+            )
 
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(full_content)

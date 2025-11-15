@@ -11,11 +11,15 @@ logger = logging.getLogger(__name__)
 class TavilySearchService:
     def __init__(self):
         config = get_config()
-        self._client = AsyncTavilyClient(api_key=config.tavily.api_key, api_base_url=config.tavily.api_base_url)
+        self._client = AsyncTavilyClient(
+            api_key=config.tavily.api_key, api_base_url=config.tavily.api_base_url
+        )
         self._config = config
 
     @staticmethod
-    def rearrange_sources(sources: list[SourceData], starting_number=1) -> list[SourceData]:
+    def rearrange_sources(
+        sources: list[SourceData], starting_number=1
+    ) -> list[SourceData]:
         for i, source in enumerate(sources, starting_number):
             source.number = i
         return sources
@@ -81,7 +85,9 @@ class TavilySearchService:
 
         failed_urls = response.get("failed_results", [])
         if failed_urls:
-            logger.warning(f"⚠️ Failed to extract {len(failed_urls)} URLs: {failed_urls}")
+            logger.warning(
+                f"⚠️ Failed to extract {len(failed_urls)} URLs: {failed_urls}"
+            )
 
         return sources
 

@@ -43,9 +43,9 @@ class MCPBaseTool(BaseTool):
         try:
             async with self._client:
                 result = await self._client.call_tool(self.tool_name, payload)
-                return json.dumps([m.model_dump_json() for m in result.content], ensure_ascii=False)[
-                    : config.mcp.context_limit
-                ]
+                return json.dumps(
+                    [m.model_dump_json() for m in result.content], ensure_ascii=False
+                )[: config.mcp.context_limit]
         except Exception as e:
             logger.error(f"Error processing MCP tool {self.tool_name}: {e}")
             return f"Error: {e}"

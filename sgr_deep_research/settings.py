@@ -21,21 +21,30 @@ class OpenAIConfig(BaseModel):
     base_url: str = Field(default="https://api.openai.com/v1", description="Base URL")
     model: str = Field(default="gpt-4o-mini", description="Model to use")
     max_tokens: int = Field(default=8000, description="Maximum number of tokens")
-    temperature: float = Field(default=0.4, ge=0.0, le=1.0, description="Generation temperature")
-    proxy: str = Field(default="", description="Proxy URL (e.g., socks5://127.0.0.1:1081 or http://127.0.0.1:8080)")
+    temperature: float = Field(
+        default=0.4, ge=0.0, le=1.0, description="Generation temperature"
+    )
+    proxy: str = Field(
+        default="",
+        description="Proxy URL (e.g., socks5://127.0.0.1:1081 or http://127.0.0.1:8080)",
+    )
 
 
 class TavilyConfig(BaseModel):
     """Tavily Search API settings."""
 
     api_key: str = Field(description="Tavily API key")
-    api_base_url: str = Field(default="https://api.tavily.com", description="Tavily API base URL")
+    api_base_url: str = Field(
+        default="https://api.tavily.com", description="Tavily API base URL"
+    )
 
 
 class SearchConfig(BaseModel):
     """Search settings."""
 
-    max_results: int = Field(default=10, ge=1, description="Maximum number of search results")
+    max_results: int = Field(
+        default=10, ge=1, description="Maximum number of search results"
+    )
 
 
 class ScrapingConfig(BaseModel):
@@ -43,35 +52,66 @@ class ScrapingConfig(BaseModel):
 
     enabled: bool = Field(default=False, description="Enable full text scraping")
     max_pages: int = Field(default=5, gt=0, description="Maximum pages to scrape")
-    content_limit: int = Field(default=1500, gt=0, description="Content character limit per source")
+    content_limit: int = Field(
+        default=1500, gt=0, description="Content character limit per source"
+    )
 
 
 class PromptsConfig(BaseModel):
     """Prompts settings."""
 
     prompts_dir: str = Field(default="prompts", description="Directory with prompts")
-    system_prompt_file: str = Field(default="system_prompt.txt", description="System prompt file")
+    system_prompt_file: str = Field(
+        default="system_prompt.txt", description="System prompt file"
+    )
 
 
 class ExecutionConfig(BaseModel):
     """Application execution settings."""
 
-    max_steps: int = Field(default=6, gt=0, description="Maximum number of execution steps")
-    reports_dir: str = Field(default="reports", description="Directory for saving reports")
+    max_steps: int = Field(
+        default=6, gt=0, description="Maximum number of execution steps"
+    )
+    reports_dir: str = Field(
+        default="reports", description="Directory for saving reports"
+    )
     logs_dir: str = Field(default="logs", description="Directory for saving bot logs")
 
 
 class LoggingConfig(BaseModel):
     """Logging configuration settings."""
 
-    config_file: str = Field(default="logging_config.yaml", description="Logging configuration file path")
+    config_file: str = Field(
+        default="logging_config.yaml", description="Logging configuration file path"
+    )
 
 
 class MCPConfig(BaseModel):
     """MCP (Model Context Protocol) configuration settings."""
 
-    context_limit: int = Field(default=15000, gt=0, description="Maximum context length from MCP server response")
-    transport_config: dict = Field(default_factory=dict, description="MCP servers configuration")
+    context_limit: int = Field(
+        default=15000,
+        gt=0,
+        description="Maximum context length from MCP server response",
+    )
+    transport_config: dict = Field(
+        default_factory=dict, description="MCP servers configuration"
+    )
+
+
+class ElasticSearchConfig(BaseModel):
+    """Config for custom ElasticSearch"""
+
+    elastic_timeout: int = Field(default=30, gt=0, description="Timeout in seconds")
+    know2_api_base_url: str = Field(
+        default="", description="Elastic Search Service URL"
+    )
+    know2_auth_login_username: str = Field(
+        default="", description="Elastic Search Service username"
+    )
+    know2_auth_login_password: str = Field(
+        default="", description="Elastic Search Service password"
+    )
 
 
 class AppConfig(BaseModel):
@@ -79,12 +119,26 @@ class AppConfig(BaseModel):
 
     openai: OpenAIConfig = Field(description="OpenAI settings")
     tavily: TavilyConfig = Field(description="Tavily settings")
-    search: SearchConfig = Field(default_factory=SearchConfig, description="Search settings")
-    scraping: ScrapingConfig = Field(default_factory=ScrapingConfig, description="Scraping settings")
-    execution: ExecutionConfig = Field(default_factory=ExecutionConfig, description="Execution settings")
-    prompts: PromptsConfig = Field(default_factory=PromptsConfig, description="Prompts settings")
-    logging: LoggingConfig = Field(default_factory=LoggingConfig, description="Logging settings")
+    search: SearchConfig = Field(
+        default_factory=SearchConfig, description="Search settings"
+    )
+    scraping: ScrapingConfig = Field(
+        default_factory=ScrapingConfig, description="Scraping settings"
+    )
+    execution: ExecutionConfig = Field(
+        default_factory=ExecutionConfig, description="Execution settings"
+    )
+    prompts: PromptsConfig = Field(
+        default_factory=PromptsConfig, description="Prompts settings"
+    )
+    logging: LoggingConfig = Field(
+        default_factory=LoggingConfig, description="Logging settings"
+    )
     mcp: MCPConfig = Field(default_factory=MCPConfig, description="MCP settings")
+    elastic: ElasticSearchConfig = Field(
+        default_factory=ElasticSearchConfig,
+        description="ElasticSearch Service settings",
+    )
 
 
 class ServerConfig(BaseModel):

@@ -49,7 +49,10 @@ class NextStepToolsBuilder:
         return create_model(  # noqa
             f"D_{tool_class.__name__}",
             __base__=(tool_class, DiscriminantToolMixin),  # the order matters here
-            tool_name_discriminator=(Literal[tool_class.tool_name], Field(..., description="Tool name discriminator")),
+            tool_name_discriminator=(
+                Literal[tool_class.tool_name],
+                Field(..., description="Tool name discriminator"),
+            ),
         )
 
     @classmethod
@@ -58,12 +61,16 @@ class NextStepToolsBuilder:
         if len(tools_list) == 1:
             return cls._create_discriminant_tool(tools_list[0])
         # SGR inference struggles with choosing right schema otherwise
-        discriminant_tools = [cls._create_discriminant_tool(tool) for tool in tools_list]
+        discriminant_tools = [
+            cls._create_discriminant_tool(tool) for tool in tools_list
+        ]
         union = reduce(operator.or_, discriminant_tools)
         return Annotated[union, Field()]
 
     @classmethod
-    def build_NextStepTools(cls, tools_list: list[Type[T]]) -> Type[NextStepToolStub]:  # noqa
+    def build_NextStepTools(
+        cls, tools_list: list[Type[T]]
+    ) -> Type[NextStepToolStub]:  # noqa
         return create_model(
             "NextStepTools",
             __base__=NextStepToolStub,

@@ -65,7 +65,12 @@ async def get_available_models():
     """Get list of available agent models."""
     return {
         "data": [
-            {"id": model.value, "object": "model", "created": 1234567890, "owned_by": "sgr-deep-research"}
+            {
+                "id": model.value,
+                "object": "model",
+                "created": 1234567890,
+                "owned_by": "sgr-deep-research",
+            }
             for model in AgentModel
         ],
         "object": "list",
@@ -86,7 +91,9 @@ async def provide_clarification(agent_id: str, request: ClarificationRequest):
         if not agent:
             raise HTTPException(status_code=404, detail="Agent not found")
 
-        logger.info(f"Providing clarification to agent {agent.id}: {request.clarifications[:100]}...")
+        logger.info(
+            f"Providing clarification to agent {agent.id}: {request.clarifications[:100]}..."
+        )
 
         await agent.provide_clarification(request.clarifications)
         return StreamingResponse(
@@ -113,7 +120,10 @@ def _is_agent_id(model_str: str) -> bool:
 @router.post("/v1/chat/completions")
 async def create_chat_completion(request: ChatCompletionRequest):
     if not request.stream:
-        raise HTTPException(status_code=501, detail="Only streaming responses are supported. Set 'stream=true'")
+        raise HTTPException(
+            status_code=501,
+            detail="Only streaming responses are supported. Set 'stream=true'",
+        )
 
     # Check if this is a clarification request for an existing agent
     if (
@@ -121,15 +131,18 @@ async def create_chat_completion(request: ChatCompletionRequest):
         and isinstance(request.model, str)
         and _is_agent_id(request.model)
         and request.model in agents_storage
-        and agents_storage[request.model]._context.state == AgentStatesEnum.WAITING_FOR_CLARIFICATION
+        and agents_storage[request.model]._context.state
+        == AgentStatesEnum.WAITING_FOR_CLARIFICATION
     ):
         return await provide_clarification(
             agent_id=request.model,
-            request=ClarificationRequest(clarifications=extract_user_content_from_messages(request.messages)),
+            request=ClarificationRequest(
+                clarifications=extract_user_content_from_messages(request.messages)
+            ),
         )
 
     try:
-        
+
         task = extract_user_content_from_messages(request.messages)
 
         try:
@@ -143,7 +156,9 @@ async def create_chat_completion(request: ChatCompletionRequest):
         agent_class = AGENT_MODEL_MAPPING[agent_model]
         agent = agent_class(task=task)
         agents_storage[agent.id] = agent
-        logger.info(f"Agent {agent.id} ({agent_model.value}) created and stored for task: {task[:100]}...")
+        logger.info(
+            f"Agent {agent.id} ({agent_model.value}) created and stored for task: {task[:100]}..."
+        )
 
         _ = asyncio.create_task(agent.execute())
         return StreamingResponse(
