@@ -45,7 +45,11 @@ class OpenAIStreamingGenerator(StreamingGenerator):
             "system_fingerprint": self.fingerprint,
             "choices": [
                 {
-                    "delta": {"content": content, "role": "assistant", "tool_calls": None},
+                    "delta": {
+                        "content": content,
+                        "role": "assistant",
+                        "tool_calls": None,
+                    },
                     "index": self.choice_index,
                     "finish_reason": None,
                     "logprobs": None,
@@ -71,7 +75,10 @@ class OpenAIStreamingGenerator(StreamingGenerator):
                                 "index": 0,
                                 "id": tool_call_id,
                                 "type": "function",
-                                "function": {"name": function_name, "arguments": arguments},
+                                "function": {
+                                    "name": function_name,
+                                    "arguments": arguments,
+                                },
                             }
                         ]
                     },
@@ -92,7 +99,14 @@ class OpenAIStreamingGenerator(StreamingGenerator):
             "created": self.created,
             "model": self.model,
             "system_fingerprint": f"fp_{hex(hash(self.model))[-8:]}",
-            "choices": [{"index": self.choice_index, "delta": {}, "logprobs": None, "finish_reason": finish_reason}],
+            "choices": [
+                {
+                    "index": self.choice_index,
+                    "delta": {},
+                    "logprobs": None,
+                    "finish_reason": finish_reason,
+                }
+            ],
             "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
         }
         super().add(f"data: {json.dumps(final_response)}\n\n")

@@ -77,7 +77,7 @@ class SGRAgent(BaseAgent):
             async for event in stream:
                 if event.type == "chunk":
                     self.streaming_generator.add_chunk(event)
-        
+
         reasoning: NextStepToolStub = (await stream.get_final_completion()).choices[0].message.parsed  # type: ignore
         # we are not fully sure if it should be in conversation or not. Looks like not necessary data
         # self.conversation.append({"role": "assistant", "content": reasoning.model_dump_json(exclude={"function"})})
@@ -91,7 +91,11 @@ class SGRAgent(BaseAgent):
         self.conversation.append(
             {
                 "role": "assistant",
-                "content": reasoning.remaining_steps[0] if reasoning.remaining_steps else "Completing",
+                "content": (
+                    reasoning.remaining_steps[0]
+                    if reasoning.remaining_steps
+                    else "Completing"
+                ),
                 "tool_calls": [
                     {
                         "type": "function",
@@ -112,7 +116,11 @@ class SGRAgent(BaseAgent):
     async def _action_phase(self, tool: BaseTool) -> str:
         result = await tool(self._context)
         self.conversation.append(
-            {"role": "tool", "content": result, "tool_call_id": f"{self._context.iteration}-action"}
+            {
+                "role": "tool",
+                "content": result,
+                "tool_call_id": f"{self._context.iteration}-action",
+            }
         )
         self.streaming_generator.add_chunk_from_str(f"{result}\n")
         self._log_tool_execution(tool, result)

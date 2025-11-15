@@ -16,7 +16,9 @@ class ClarificationTool(BaseTool):
     Keep all fields concise - brief reasoning, short terms, and clear questions.
     """
 
-    reasoning: str = Field(description="Why clarification is needed (1-2 sentences MAX)", max_length=200)
+    reasoning: str = Field(
+        description="Why clarification is needed (1-2 sentences MAX)", max_length=200
+    )
     unclear_terms: list[str] = Field(
         description="List of unclear terms (brief, 1-3 words each)",
         min_length=1,

@@ -18,13 +18,19 @@ class SGRSOToolCallingAgent(SGRToolCallingAgent):
             max_tokens=config.openai.max_tokens,
             temperature=config.openai.temperature,
             tools=await self._prepare_tools(),
-            tool_choice={"type": "function", "function": {"name": ReasoningTool.tool_name}},
+            tool_choice={
+                "type": "function",
+                "function": {"name": ReasoningTool.tool_name},
+            },
         ) as stream:
             async for event in stream:
                 if event.type == "chunk":
                     self.streaming_generator.add_chunk(event.chunk)
             reasoning: ReasoningTool = (  # noqa
-                (await stream.get_final_completion()).choices[0].message.tool_calls[0].function.parsed_arguments  #
+                (await stream.get_final_completion())
+                .choices[0]
+                .message.tool_calls[0]
+                .function.parsed_arguments  #
             )
         async with self.openai_client.chat.completions.stream(
             model=config.openai.model,
@@ -36,7 +42,9 @@ class SGRSOToolCallingAgent(SGRToolCallingAgent):
             async for event in stream:
                 if event.type == "chunk":
                     self.streaming_generator.add_chunk(event)
-        reasoning: ReasoningTool = (await stream.get_final_completion()).choices[0].message.parsed
+        reasoning: ReasoningTool = (
+            (await stream.get_final_completion()).choices[0].message.parsed
+        )
         tool_call_result = await reasoning(self._context)
         self.conversation.append(
             {
@@ -55,7 +63,11 @@ class SGRSOToolCallingAgent(SGRToolCallingAgent):
             }
         )
         self.conversation.append(
-            {"role": "tool", "content": tool_call_result, "tool_call_id": f"{self._context.iteration}-reasoning"}
+            {
+                "role": "tool",
+                "content": tool_call_result,
+                "tool_call_id": f"{self._context.iteration}-reasoning",
+            }
         )
         self._log_reasoning(reasoning)
         return reasoning

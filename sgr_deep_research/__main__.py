@@ -32,10 +32,18 @@ def main():
 
     parser = argparse.ArgumentParser(description="SGR Agent Core Server")
     parser.add_argument(
-        "--host", type=str, dest="host", default=os.environ.get("HOST", "0.0.0.0"), help="Хост для прослушивания"
+        "--host",
+        type=str,
+        dest="host",
+        default=os.environ.get("HOST", "0.0.0.0"),
+        help="Хост для прослушивания",
     )
     parser.add_argument(
-        "--port", type=int, dest="port", default=int(os.environ.get("PORT", 8010)), help="Порт для прослушивания"
+        "--port",
+        type=int,
+        dest="port",
+        default=int(os.environ.get("PORT", 8010)),
+        help="Порт для прослушивания",
     )
     args = parser.parse_args()
 

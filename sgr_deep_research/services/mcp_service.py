@@ -26,7 +26,9 @@ class MCP2ToolConverter(metaclass=Singleton):
     def __init__(self):
         self.toolkit: list[Type[BaseTool]] = []
         if not get_config().mcp.transport_config:
-            logger.warning("No MCP configuration found. MCP2ToolConverter will not function properly.")
+            logger.warning(
+                "No MCP configuration found. MCP2ToolConverter will not function properly."
+            )
             return
         self.client: Client = Client(get_config().mcp.transport_config)
 
@@ -43,18 +45,24 @@ class MCP2ToolConverter(metaclass=Singleton):
 
             for t in mcp_tools:
                 if not t.name or not t.inputSchema:
-                    logger.error(f"Skipping tool due to missing name or input schema: {t}")
+                    logger.error(
+                        f"Skipping tool due to missing name or input schema: {t}"
+                    )
                     continue
 
                 try:
                     t.inputSchema["title"] = self._to_CamelCase(t.name)
                     PdModel = SchemaConverter.build(t.inputSchema)
                 except Exception as e:
-                    logger.error(f"Error creating model {t.name} from schema: {t.inputSchema}: {e}")
+                    logger.error(
+                        f"Error creating model {t.name} from schema: {t.inputSchema}: {e}"
+                    )
                     continue
 
                 ToolCls: Type[BaseTool] = create_model(
-                    f"MCP{self._to_CamelCase(t.name)}", __base__=(PdModel, MCPBaseTool), __doc__=t.description or ""
+                    f"MCP{self._to_CamelCase(t.name)}",
+                    __base__=(PdModel, MCPBaseTool),
+                    __doc__=t.description or "",
                 )
                 ToolCls.tool_name = t.name
                 ToolCls.description = t.description or ""

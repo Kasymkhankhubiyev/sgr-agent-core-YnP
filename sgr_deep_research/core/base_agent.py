@@ -61,14 +61,21 @@ class BaseAgent:
 
     async def provide_clarification(self, clarifications: str):
         """Receive clarification from external source (e.g. user input)"""
-        self.conversation.append({"role": "user", "content": PromptLoader.get_clarification_template(clarifications)})
+        self.conversation.append(
+            {
+                "role": "user",
+                "content": PromptLoader.get_clarification_template(clarifications),
+            }
+        )
         self._context.clarifications_used += 1
         self._context.clarification_received.set()
         self._context.state = AgentStatesEnum.RESEARCHING
         self.logger.info(f"✅ Clarification received: {clarifications[:2000]}...")
 
     def _log_reasoning(self, result: ReasoningTool) -> None:
-        next_step = result.remaining_steps[0] if result.remaining_steps else "Completing"
+        next_step = (
+            result.remaining_steps[0] if result.remaining_steps else "Completing"
+        )
         self.logger.info(
             f"""
     ###############################################
@@ -117,7 +124,9 @@ class BaseAgent:
     def _save_agent_log(self):
         logs_dir = config.execution.logs_dir
         os.makedirs(logs_dir, exist_ok=True)
-        filepath = os.path.join(logs_dir, f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-{self.id}-log.json")
+        filepath = os.path.join(
+            logs_dir, f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-{self.id}-log.json"
+        )
         agent_log = {
             "id": self.id,
             "model_config": config.openai.model_dump(exclude={"api_key", "proxy"}),
@@ -126,7 +135,12 @@ class BaseAgent:
             "log": self.log,
         }
 
-        json.dump(agent_log, open(filepath, "w", encoding="utf-8"), indent=2, ensure_ascii=False)
+        json.dump(
+            agent_log,
+            open(filepath, "w", encoding="utf-8"),
+            indent=2,
+            ensure_ascii=False,
+        )
 
     async def _prepare_context(self) -> list[dict]:
         """Prepare conversation context with system prompt."""
@@ -143,18 +157,20 @@ class BaseAgent:
         # """Call LLM to decide next action based on current context."""
         # raise NotImplementedError("_reasoning_phase must be implemented by subclass")
         res = await self.openai_client.chat.completions.create(
-        model="sgr_agent",
-        messages=[{"role": "user", "content": "Research AI market trends"}],
-        stream=True,
-        temperature=0,
-    )
+            model="sgr_agent",
+            messages=[{"role": "user", "content": "Research AI market trends"}],
+            stream=True,
+            temperature=0,
+        )
 
     async def _select_action_phase(self, reasoning: ReasoningTool) -> BaseTool:
         """Select most suitable tool for the action decided in reasoning phase.
 
         Returns the tool suitable for the action.
         """
-        raise NotImplementedError("_select_action_phase must be implemented by subclass")
+        raise NotImplementedError(
+            "_select_action_phase must be implemented by subclass"
+        )
 
     async def _action_phase(self, tool: BaseTool) -> str:
         """Call Tool for the action decided in select_action phase.

@@ -68,7 +68,10 @@ class ToolCallingAgent(BaseAgent):
             tools -= {
                 WebSearchTool,
             }
-        return [pydantic_function_tool(tool, name=tool.tool_name, description="") for tool in tools]
+        return [
+            pydantic_function_tool(tool, name=tool.tool_name, description="")
+            for tool in tools
+        ]
 
     async def _reasoning_phase(self) -> None:
         """No explicit reasoning phase, reasoning is done internally by LLM."""
@@ -86,7 +89,12 @@ class ToolCallingAgent(BaseAgent):
             async for event in stream:
                 if event.type == "chunk":
                     self.streaming_generator.add_chunk(event)
-        tool = (await stream.get_final_completion()).choices[0].message.tool_calls[0].function.parsed_arguments
+        tool = (
+            (await stream.get_final_completion())
+            .choices[0]
+            .message.tool_calls[0]
+            .function.parsed_arguments
+        )
 
         if not isinstance(tool, BaseTool):
             raise ValueError("Selected tool is not a valid BaseTool instance")
@@ -114,7 +122,11 @@ class ToolCallingAgent(BaseAgent):
     async def _action_phase(self, tool: BaseTool) -> str:
         result = await tool(self._context)
         self.conversation.append(
-            {"role": "tool", "content": result, "tool_call_id": f"{self._context.iteration}-action"}
+            {
+                "role": "tool",
+                "content": result,
+                "tool_call_id": f"{self._context.iteration}-action",
+            }
         )
         self.streaming_generator.add_chunk_from_str(f"{result}\n")
         self._log_tool_execution(tool, result)

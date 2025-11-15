@@ -67,7 +67,10 @@ class SGRToolCallingAgent(SGRAgent):
             tools -= {
                 WebSearchTool,
             }
-        return [pydantic_function_tool(tool, name=tool.tool_name, description="") for tool in tools]
+        return [
+            pydantic_function_tool(tool, name=tool.tool_name, description="")
+            for tool in tools
+        ]
 
     async def _reasoning_phase(self) -> ReasoningTool:
         async with self.openai_client.chat.completions.stream(
@@ -76,13 +79,19 @@ class SGRToolCallingAgent(SGRAgent):
             max_tokens=config.openai.max_tokens,
             temperature=config.openai.temperature,
             tools=await self._prepare_tools(),
-            tool_choice={"type": "function", "function": {"name": ReasoningTool.tool_name}},
+            tool_choice={
+                "type": "function",
+                "function": {"name": ReasoningTool.tool_name},
+            },
         ) as stream:
             async for event in stream:
                 if event.type == "chunk":
                     self.streaming_generator.add_chunk(event.chunk)
             reasoning: ReasoningTool = (
-                (await stream.get_final_completion()).choices[0].message.tool_calls[0].function.parsed_arguments
+                (await stream.get_final_completion())
+                .choices[0]
+                .message.tool_calls[0]
+                .function.parsed_arguments
             )
         self.conversation.append(
             {
@@ -102,7 +111,11 @@ class SGRToolCallingAgent(SGRAgent):
         )
         tool_call_result = await reasoning(self._context)
         self.conversation.append(
-            {"role": "tool", "content": tool_call_result, "tool_call_id": f"{self._context.iteration}-reasoning"}
+            {
+                "role": "tool",
+                "content": tool_call_result,
+                "tool_call_id": f"{self._context.iteration}-reasoning",
+            }
         )
         self._log_reasoning(reasoning)
         return reasoning
@@ -126,7 +139,9 @@ class SGRToolCallingAgent(SGRAgent):
             tool = completion.choices[0].message.tool_calls[0].function.parsed_arguments
         except (IndexError, AttributeError, TypeError):
             # LLM returned a text response instead of a tool call - treat as completion
-            final_content = completion.choices[0].message.content or "Task completed successfully"
+            final_content = (
+                completion.choices[0].message.content or "Task completed successfully"
+            )
             tool = FinalAnswerTool(
                 reasoning="Agent decided to complete the task",
                 completed_steps=[final_content],
@@ -137,7 +152,11 @@ class SGRToolCallingAgent(SGRAgent):
         self.conversation.append(
             {
                 "role": "assistant",
-                "content": reasoning.remaining_steps[0] if reasoning.remaining_steps else "Completing",
+                "content": (
+                    reasoning.remaining_steps[0]
+                    if reasoning.remaining_steps
+                    else "Completing"
+                ),
                 "tool_calls": [
                     {
                         "type": "function",
