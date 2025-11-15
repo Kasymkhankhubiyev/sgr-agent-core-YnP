@@ -49,8 +49,6 @@ class WebSearchTool(BaseTool):
     max_results: int = Field(
         default_factory=lambda: min(config.search.max_results, 10),
         description="Maximum results",
-        ge=1,
-        le=10,
     )
 
     def __init__(self, **data):
