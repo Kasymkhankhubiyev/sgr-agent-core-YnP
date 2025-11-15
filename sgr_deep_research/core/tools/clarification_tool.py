@@ -17,22 +17,16 @@ class ClarificationTool(BaseTool):
     """
 
     reasoning: str = Field(
-        description="Why clarification is needed (1-2 sentences MAX)", max_length=200
+        description="Why clarification is needed (1-2 sentences MAX)"
     )
     unclear_terms: list[str] = Field(
-        description="List of unclear terms (brief, 1-3 words each)",
-        min_length=1,
-        max_length=3,
+        description="List of unclear terms (brief, 1-3 words each)"
     )
     assumptions: list[str] = Field(
-        description="Possible interpretations (short, 1 sentence each)",
-        min_length=2,
-        max_length=3,
+        description="Possible interpretations (short, 1 sentence each)"
     )
     questions: list[str] = Field(
-        description="3 specific clarifying questions (short and direct)",
-        min_length=3,
-        max_length=3,
+        description="3 specific clarifying questions (short and direct)"
     )
 
     async def __call__(self, context: ResearchContext) -> str:

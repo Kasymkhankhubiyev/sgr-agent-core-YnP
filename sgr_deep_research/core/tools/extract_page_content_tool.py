@@ -36,8 +36,6 @@ class ExtractPageContentTool(BaseTool):
     reasoning: str = Field(description="Why extract these specific pages")
     urls: list[str] = Field(
         description="List of URLs to extract full content from",
-        min_length=1,
-        max_length=5,
     )
 
     def __init__(self, **data):
